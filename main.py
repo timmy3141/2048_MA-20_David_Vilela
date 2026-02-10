@@ -8,7 +8,7 @@ root.config(bg='#BBADA0')
 
 # Definition de la taille de la fenetre
 window_width = 660
-window_height = 810
+window_height = 850
 
 # Obtient la taille de l'écran
 screen_width = root.winfo_screenwidth()
