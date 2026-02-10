@@ -85,7 +85,7 @@ score_label.pack(padx=10, pady=10)
 # Meilleur score
 best_frame = tk.Frame(top_row, bg="#D9D9D9", bd=2, relief="solid")
 best_frame.pack(side="right", padx=(10,0))
-best_label = tk.Label(best_frame, text=f"Best\n{best_score}", font=("Helvetica", 16, "bold"), bg="#D9D9D9", fg="#333")
+best_label = tk.Label(best_frame, text=f"Best Score\n{best_score}", font=("Helvetica", 16, "bold"), bg="#D9D9D9", fg="#333")
 best_label.pack(padx=10, pady=10)
 
 # Bouton Rejouer
