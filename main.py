@@ -4,7 +4,7 @@ import tkinter as tk
 root = tk.Tk()
 root.title('2048')
 root.resizable(False, False)
-root.config(bg='#BBADA0')
+root.config(bg='#FFFFFF')
 
 # Definition de la taille de la fenetre
 window_width = 660
@@ -50,15 +50,15 @@ best_score = 0
 
 # -----------------------------------------HEADER-----------------------------------------
 
-top_frame = tk.Frame(root, bg="#BBADA0", height=150)
+top_frame = tk.Frame(root, bg="#FFFFFF", height=150)
 top_frame.pack(fill="x", pady=(20, 0))
 
 # "Sous-frame" pour titre et scores
-top_row = tk.Frame(top_frame, bg="#BBADA0")
+top_row = tk.Frame(top_frame, bg="#FFFFFF")
 top_row.pack(fill="x", padx=20)
 
 # "Sous-frame" pour bouton rejouer
-bottom_row = tk.Frame(top_frame, bg="#BBADA0")
+bottom_row = tk.Frame(top_frame, bg="#FFFFFF")
 bottom_row.pack(fill="x", padx=20, pady=(10,0))
 
 # "Titre" 2048
@@ -115,7 +115,7 @@ for i in range(4):
             text="",
             font=("Helvetica", 40, "bold"),
             width=4, height=2,
-            bg="#FFFFFF",
+            bg="#777676",
             fg="#FFFFFF",
             bd=4,
             relief="raised"
