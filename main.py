@@ -1,3 +1,15 @@
+"""
+Auteur : David Vilela
+Classe : SI-Ca1a
+Projet : MA20 – 2048 (Sprint 1)
+Date de création: 10.02.2026
+
+Description :
+Ce programme est une reconstitution graphique du jeu 2048 realisée avec Tkinter.
+Il s'agit uniquement de la partie affichage : creation de la fenetre, du plateau,
+des cases colorées et des scores.
+"""
+
 import tkinter as tk
 
 
@@ -39,17 +51,28 @@ tiles_colors = {
 }
 
 game = [
+    [0,0,0,0],
+    [0,0,0,0],
+    [0,0,0,0],
+    [0,0,0,0]
+]
+
+#Jeu en mémoire
+"""
+game = [
     [2,4,8,16],
     [32,64,128,256],
     [512,1024,2048,4096],
     [8192,0,0,0]
 ]
+"""
 
 current_score = 0
 best_score = 0
 
 # -----------------------------------------HEADER-----------------------------------------
 
+# Frame pour le "header"
 top_frame = tk.Frame(root, bg="#FFFFFF", height=150)
 top_frame.pack(fill="x", pady=(20, 0))
 
@@ -61,7 +84,7 @@ top_row.pack(fill="x", padx=20)
 bottom_row = tk.Frame(top_frame, bg="#FFFFFF")
 bottom_row.pack(fill="x", padx=20, pady=(10,0))
 
-# "Titre" 2048
+# Affichage de "2048"
 title_label = tk.Label(
     top_row,
     text="2048",
@@ -75,20 +98,19 @@ title_label = tk.Label(
 )
 title_label.pack(side="left", padx=(0, 20))
 
-# Score actuel
-score = 0
+# Affichage score actuel
 score_frame = tk.Frame(top_row, bg="#D9D9D9", bd=2, relief="solid")
 score_frame.pack(side="right", padx=(10,0))
 score_label = tk.Label(score_frame, text=f"Score\n{current_score}", font=("Helvetica", 16, "bold"), bg="#D9D9D9", fg="#333")
 score_label.pack(padx=10, pady=10)
 
-# Meilleur score
-best_frame = tk.Frame(top_row, bg="#D9D9D9", bd=2, relief="solid")
-best_frame.pack(side="right", padx=(10,0))
-best_label = tk.Label(best_frame, text=f"Best Score\n{best_score}", font=("Helvetica", 16, "bold"), bg="#D9D9D9", fg="#333")
-best_label.pack(padx=10, pady=10)
+# Affichage meilleur score
+bestscore_frame = tk.Frame(top_row, bg="#D9D9D9", bd=2, relief="solid")
+bestscore_frame.pack(side="right", padx=(10,0))
+bestscore_label = tk.Label(bestscore_frame, text=f"Best Score\n{best_score}", font=("Helvetica", 16, "bold"), bg="#D9D9D9", fg="#333")
+bestscore_label.pack(padx=10, pady=10)
 
-# Bouton Rejouer
+# Affichage bouton Rejouer
 restart_button = tk.Button(
     bottom_row,
     text="Rejouer",
@@ -98,15 +120,16 @@ restart_button = tk.Button(
     width=12,
     height=2
 )
-restart_button.pack(side="left")  # sous le "2048"
+restart_button.pack(side="left")
 
 
 #-----------------------------------------PLATEAU-----------------------------------------
 
+# Création du plateau
 board_frame = tk.Frame(root, bg="#777676", width=600, height=600)
 board_frame.pack(pady=20)
 
-# Création du plateau
+# Création des cases
 tile_labels = [[None]*4 for _ in range(4)]
 for i in range(4):
     for j in range(4):
@@ -123,6 +146,7 @@ for i in range(4):
         label.grid(row=i, column=j, padx=10, pady=10)
         tile_labels[i][j] = label
 
+# Mise à joue de l'affichage des cases
 def display():
     for i in range(4):
         for j in range(4):
