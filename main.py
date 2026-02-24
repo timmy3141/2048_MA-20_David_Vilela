@@ -12,7 +12,6 @@ des cases colorées et des scores.
 
 import tkinter as tk
 
-
 root = tk.Tk()
 root.title('2048')
 root.resizable(False, False)
@@ -49,23 +48,22 @@ tiles_colors = {
   "4096": "#51010F",
   "8192": "#200006"
 }
-
+"""
 game = [
     [0,0,0,0],
     [0,0,0,0],
     [0,0,0,0],
     [0,0,0,0]
 ]
-
-#Jeu en mémoire
 """
+#Jeu en mémoire
+
 game = [
     [2,4,8,16],
     [32,64,128,256],
     [512,1024,2048,4096],
     [8192,0,0,0]
 ]
-"""
 
 current_score = 0
 best_score = 0
@@ -118,7 +116,7 @@ restart_button = tk.Button(
     bg="#D9D9D9",
     fg="black",
     width=12,
-    height=2
+    height=2,
 )
 restart_button.pack(side="left")
 
@@ -155,7 +153,6 @@ def display():
                 tile_labels[i][j].config(text="", bg="#FFFFFF")
             else:
                 tile_labels[i][j].config(text=str(val), bg=tiles_colors[str(val)])
-
 
 
 display()
