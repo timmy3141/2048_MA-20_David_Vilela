@@ -1,7 +1,7 @@
 
-a = 2
+a = 0
 b = 0
-c = 2
+c = 0
 
 def pack3(a,b,c):
     if a == 0:
