@@ -1,7 +1,7 @@
 """
 Auteur : David Vilela
 Classe : SI-Ca1a
-Projet : MA20 – 2048 (Sprint 1)
+Projet : MA20 – 2048
 Date de création: 10.02.2026
 
 Description :
