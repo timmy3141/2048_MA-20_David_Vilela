@@ -6,6 +6,8 @@ Date de création: 10.02.2026
 
 Description :
 Ce programme est une reconstitution du jeu 2048 realisée avec Tkinter.
+
+Source pour fenetre centrée: https://www.pythontutorial.net/tkinter/tkinter-window/
 """
 
 import tkinter as tk
