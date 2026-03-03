@@ -5,12 +5,11 @@ Projet : MA20 – 2048 (Sprint 1)
 Date de création: 10.02.2026
 
 Description :
-Ce programme est une reconstitution graphique du jeu 2048 realisée avec Tkinter.
-Il s'agit uniquement de la partie affichage : creation de la fenetre, du plateau,
-des cases colorées et des scores.
+Ce programme est une reconstitution du jeu 2048 realisée avec Tkinter.
 """
 
 import tkinter as tk
+import copy
 
 root = tk.Tk()
 root.title('2048')
@@ -34,37 +33,49 @@ root.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
 
 # Definition des couleurs pour chaque valeur de case
 tiles_colors = {
-  "2": "#1B1D2F",
-  "4": "#283650",
-  "8": "#3C4C69",
-  "16": "#687792",
-  "32": "#8D99AE",
-  "64": "#CFC4D0",
-  "128": "#FA6D86",
-  "256": "#F43B5B",
-  "512": "#DF092E",
-  "1024": "#C00A2A",
-  "2048": "#7C0117",
-  "4096": "#51010F",
-  "8192": "#200006"
+  2: "#1B1D2F",
+  4: "#283650",
+  8: "#3C4C69",
+  16: "#687792",
+  32: "#8D99AE",
+  64: "#CFC4D0",
+  128: "#FA6D86",
+  256: "#F43B5B",
+  512: "#DF092E",
+  1024: "#C00A2A",
+  2048: "#7C0117",
+  4096: "#51010F",
+  8192: "#200006"
 }
-"""
-game = [
-    [0,0,0,0],
-    [0,0,0,0],
-    [0,0,0,0],
-    [0,0,0,0]
-]
-"""
-#Jeu en mémoire
 
+game = [
+    [4,0,2,2],
+    [2,0,2,4],
+    [0,4,2,2],
+    [2,2,0,4]
+]
+
+# copie du jeu pour bouton reset
+game_very_old = copy.deepcopy(game)
+
+#Jeux en mémoire
+""""
+# Jeu rempli
 game = [
     [2,4,8,16],
     [32,64,128,256],
     [512,1024,2048,4096],
     [8192,0,0,0]
 ]
+ # Jeu vide
+game = [
+    [0,0,0,0],
+    [0,0,0,0],
+    [0,0,0,0],
+    [0,0,0,0]
+]
 
+"""
 current_score = 0
 best_score = 0
 
@@ -108,7 +119,13 @@ bestscore_frame.pack(side="right", padx=(10,0))
 bestscore_label = tk.Label(bestscore_frame, text=f"Best Score\n{best_score}", font=("Helvetica", 16, "bold"), bg="#D9D9D9", fg="#333")
 bestscore_label.pack(padx=10, pady=10)
 
-# Affichage bouton Rejouer
+# Affichage bouton Rejouer et Fonction Reset
+def reset_game():
+    global game
+    game = game_very_old
+    game = copy.deepcopy(game)
+    display()
+
 restart_button = tk.Button(
     bottom_row,
     text="Rejouer",
@@ -117,32 +134,39 @@ restart_button = tk.Button(
     fg="black",
     width=12,
     height=2,
+    command=reset_game
 )
 restart_button.pack(side="left")
 
 
-#-----------------------------------------PLATEAU-----------------------------------------
+# -----------------------------------------PLATEAU-----------------------------------------
 
 # Création du plateau
 board_frame = tk.Frame(root, bg="#777676", width=600, height=600)
 board_frame.pack(pady=20)
 
 # Création des cases
-tile_labels = [[None]*4 for _ in range(4)]
-for i in range(4):
-    for j in range(4):
+tile_labels = []
+for row in range(4):
+    current_row = []
+    for col in range(4):
         label = tk.Label(
             board_frame,
             text="",
             font=("Helvetica", 40, "bold"),
-            width=4, height=2,
+            width=4,
+            height=2,
             bg="#777676",
             fg="#FFFFFF",
             bd=4,
             relief="raised"
         )
-        label.grid(row=i, column=j, padx=10, pady=10)
-        tile_labels[i][j] = label
+        label.grid(row=row, column=col, padx=10, pady=10)
+        current_row.append(label)
+    tile_labels.append(current_row)
+
+
+# -----------------------------------------LOGIQUE DU JEU-----------------------------------------
 
 # Mise à joue de l'affichage des cases
 def display():
@@ -152,8 +176,100 @@ def display():
             if val == 0:
                 tile_labels[i][j].config(text="", bg="#FFFFFF")
             else:
-                tile_labels[i][j].config(text=str(val), bg=tiles_colors[str(val)])
+                tile_labels[i][j].config(text=str(val), bg=tiles_colors[val])
 
+# Capture des inputs clavier
+def key_input(event):
+    key = event.keysym
+
+    if key == "w" or key == "W" or key == "Up":
+        up()
+    if key == "a" or key == "A" or key == "Left":
+        left()
+    if key == "s" or key == "S" or key == "Down":
+        down()
+    if key == "d" or key == "D" or key == "Right":
+        right()
+root.bind("<KeyPress>", key_input)
+root.focus_set()
+
+# Ecrasement des cases lors de key_input
+def pack4(a,b,c,d):
+    # Déplacer les zéros vers la gauche
+    if a == 0:
+        a,b,c,d = b,c,d,0
+    if a == 0:
+        a,b,c,d = b,c,d,0
+    if a == 0:
+        a,b,c,d = b,c,d,0
+    if b == 0:
+        b,c,d = c,d,0
+    if b == 0:
+        b,c,d = c,d,0
+    if c == 0:
+        c,d = d,0
+    # Fusionner les cases
+    if a == b and a != 0:
+        a,b,c,d = a*2, c, d, 0
+    if b == c and b != 0:
+        b,c,d = b*2, d, 0
+    if c == d and c != 0:
+        c,d = c*2, 0
+    # Déplacer à nouveau les zéros après fusion
+    if a == 0:
+        a,b,c,d = b,c,d,0
+    if a == 0:
+        a,b,c,d = b,c,d,0
+    if a == 0:
+        a,b,c,d = b,c,d,0
+    if b == 0:
+        b,c,d = c,d,0
+    if b == 0:
+        b,c,d = c,d,0
+    if c == 0:
+        c,d = d,0
+    return (a,b,c,d)
+
+# Ecrasement des cases selon direction
+def right():
+    game_old = copy.deepcopy(game)
+    for i in range(4):
+        (game[i][3],game[i][2],game[i][1],game[i][0]) = pack4(game[i][3],game[i][2],game[i][1],game[i][0])
+    if game_old == game:
+        print("Le jeu n'a pas changé")
+    if game_old != game:
+        print("Right")
+    display()
+
+def left():
+    game_old = copy.deepcopy(game)
+    for i in range(4):
+        (game[i][0],game[i][1],game[i][2],game[i][3]) = pack4(game[i][0],game[i][1],game[i][2],game[i][3])
+    if game_old == game:
+        print("Le jeu n'a pas changé")
+    if game_old != game:
+        print("Left")
+    display()
+
+def up():
+    game_old = copy.deepcopy(game)
+    for j in range(4):
+        (game[0][j],game[1][j],game[2][j],game[3][j]) = pack4(game[0][j],game[1][j],game[2][j],game[3][j])
+    if game_old == game:
+        print("Le jeu n'a pas changé")
+    if game_old != game:
+        print("Up")
+    display()
+
+def down():
+    game_old = copy.deepcopy(game)
+    for j in range(4):
+        (game[3][j], game[2][j],game[1][j],game[0][j]) = pack4(game[3][j],game[2][j],game[1][j],game[0][j])
+    if game_old == game:
+        print("Le jeu n'a pas changé")
+    if game_old != game:
+        print("Down")
+    display()
 
 display()
 root.mainloop()
