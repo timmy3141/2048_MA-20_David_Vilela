@@ -121,11 +121,33 @@ bestscore_frame.pack(side="right", padx=(10,0))
 bestscore_label = tk.Label(bestscore_frame, text=f"Best Score\n{best_score}", font=("Helvetica", 16, "bold"), bg="#D9D9D9", fg="#333")
 bestscore_label.pack(padx=10, pady=10)
 
+#Affichage bouton Retour et Fonction retour
+def back_game():
+    global game
+    global game_old
+    game = copy.deepcopy(game_old)
+    display()
+
+back_button = tk.Button(
+    bottom_row,
+    text="<",
+    font=("Helvetica", 14, "bold"),
+    bg="#D9D9D9",
+    fg="black",
+    width=3,
+    height=2,
+    command=back_game
+)
+back_button.pack(side="left")
+
 # Affichage bouton Rejouer et Fonction Reset
 def reset_game():
     global game
+    global game_old
     game = game_very_old
     game = copy.deepcopy(game)
+    game_old = copy.deepcopy(game)
+    print("Jeu reinitialisé")
     display()
 
 restart_button = tk.Button(
@@ -134,11 +156,11 @@ restart_button = tk.Button(
     font=("Helvetica", 14, "bold"),
     bg="#D9D9D9",
     fg="black",
-    width=12,
+    width=11,
     height=2,
     command=reset_game
 )
-restart_button.pack(side="left")
+restart_button.pack(side="left", padx=8)
 
 
 # -----------------------------------------PLATEAU-----------------------------------------
@@ -234,6 +256,7 @@ def pack4(a,b,c,d):
 
 # Ecrasement des cases selon direction
 def right():
+    global game_old
     game_old = copy.deepcopy(game)
     for i in range(4):
         (game[i][3],game[i][2],game[i][1],game[i][0]) = pack4(game[i][3],game[i][2],game[i][1],game[i][0])
@@ -244,6 +267,7 @@ def right():
     display()
 
 def left():
+    global game_old
     game_old = copy.deepcopy(game)
     for i in range(4):
         (game[i][0],game[i][1],game[i][2],game[i][3]) = pack4(game[i][0],game[i][1],game[i][2],game[i][3])
@@ -254,6 +278,7 @@ def left():
     display()
 
 def up():
+    global game_old
     game_old = copy.deepcopy(game)
     for j in range(4):
         (game[0][j],game[1][j],game[2][j],game[3][j]) = pack4(game[0][j],game[1][j],game[2][j],game[3][j])
@@ -264,6 +289,7 @@ def up():
     display()
 
 def down():
+    global game_old
     game_old = copy.deepcopy(game)
     for j in range(4):
         (game[3][j], game[2][j],game[1][j],game[0][j]) = pack4(game[3][j],game[2][j],game[1][j],game[0][j])
