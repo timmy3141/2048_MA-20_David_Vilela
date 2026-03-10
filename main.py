@@ -52,9 +52,9 @@ tiles_colors = {
 
 game = [
     [4,0,2,2],
-    [2,0,2,4],
-    [0,4,2,2],
-    [2,4,0,2]
+    [2,0,2,8],
+    [0,4,16,2],
+    [2,32,2,2]
 ]
 
 # copie du jeu pour bouton reset
@@ -80,6 +80,7 @@ game = [
 """
 current_score = 0
 best_score = 0
+old_best_score = 0
 
 # -----------------------------------------HEADER-----------------------------------------
 
@@ -124,8 +125,12 @@ bestscore_label.pack(padx=10, pady=10)
 #Affichage bouton Retour et Fonction retour
 def back_game():
     global game
-    global game_old
+    global current_score
+    global best_score
     game = copy.deepcopy(game_old)
+    current_score = old_score
+    best_score = old_best_score
+    print("Retour")
     display()
 
 back_button = tk.Button(
@@ -140,16 +145,17 @@ back_button = tk.Button(
 )
 back_button.pack(side="left")
 
-# Affichage bouton Rejouer et Fonction Reset
+# Fonction Reset du jeu
 def reset_game():
     global game
     global game_old
-    game = game_very_old
-    game = copy.deepcopy(game)
+    global current_score
+    game = copy.deepcopy(game_very_old)
     game_old = copy.deepcopy(game)
-    print("Jeu reinitialisé")
+    current_score = 0
     display()
 
+# Affichage bouton reset
 restart_button = tk.Button(
     bottom_row,
     text="Rejouer",
@@ -201,11 +207,22 @@ def display():
                 tile_labels[i][j].config(text="", bg="#FFFFFF")
             else:
                 tile_labels[i][j].config(text=str(val), bg=tiles_colors[val])
+    # Actualisation des scores
+    score_label.config(text=f"Score\n{current_score}")
+    bestscore_label.config(text=f"Best Score\n{best_score}")
+
+# Sauvegarde de l'etat du jeu
+def save_state():
+    global game_old
+    global old_score
+    global old_best_score
+    game_old = copy.deepcopy(game)
+    old_score = current_score
+    old_best_score = best_score
 
 # Capture des inputs clavier
 def key_input(event):
     key = event.keysym
-
     if key == "w" or key == "W" or key == "Up":
         up()
     if key == "a" or key == "A" or key == "Left":
@@ -219,6 +236,8 @@ root.focus_set()
 
 # Ecrasement des cases lors de key_input
 def pack4(a,b,c,d):
+    global current_score
+    global best_score
     # Déplacer les zéros vers la gauche
     if c == 0:
         c,d = d,0
@@ -226,26 +245,26 @@ def pack4(a,b,c,d):
         b,c,d = c,d,0
     if a == 0:
         a,b,c,d = b,c,d,0
-    # Fusionner les cases
+    # Fusionner les cases et actualisation du score
     if a == b and a != 0:
+        current_score += a * 2
         a,b,c,d = a*2, c, d, 0
     if b == c and b != 0:
+        current_score += b * 2
         b,c,d = b*2, d, 0
     if c == d and c != 0:
+        current_score += c * 2
         c,d = c*2, 0
-    # Déplacer à nouveau les zéros après fusion
-    if c == 0:
-        c,d = d,0
-    if b == 0:
-        b,c,d = c,d,0
-    if a == 0:
-        a,b,c,d = b,c,d,0
+
+    # Actualisation du meilleur score
+    if current_score > best_score:
+        best_score = current_score
+
     return (a,b,c,d)
 
 # Ecrasement des cases selon direction
 def right():
-    global game_old
-    game_old = copy.deepcopy(game)
+    save_state()
     for i in range(4):
         (game[i][3],game[i][2],game[i][1],game[i][0]) = pack4(game[i][3],game[i][2],game[i][1],game[i][0])
     if game_old == game:
@@ -255,8 +274,7 @@ def right():
     display()
 
 def left():
-    global game_old
-    game_old = copy.deepcopy(game)
+    save_state()
     for i in range(4):
         (game[i][0],game[i][1],game[i][2],game[i][3]) = pack4(game[i][0],game[i][1],game[i][2],game[i][3])
     if game_old == game:
@@ -266,8 +284,7 @@ def left():
     display()
 
 def up():
-    global game_old
-    game_old = copy.deepcopy(game)
+    save_state()
     for j in range(4):
         (game[0][j],game[1][j],game[2][j],game[3][j]) = pack4(game[0][j],game[1][j],game[2][j],game[3][j])
     if game_old == game:
@@ -277,8 +294,7 @@ def up():
     display()
 
 def down():
-    global game_old
-    game_old = copy.deepcopy(game)
+    save_state()
     for j in range(4):
         (game[3][j], game[2][j],game[1][j],game[0][j]) = pack4(game[3][j],game[2][j],game[1][j],game[0][j])
     if game_old == game:
