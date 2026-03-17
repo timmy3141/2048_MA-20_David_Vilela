@@ -8,12 +8,12 @@ Description :
 Ce programme est une reconstitution du jeu 2048 realisée avec Tkinter.
 
 Source pour fenetre centrée: https://www.pythontutorial.net/tkinter/tkinter-window/
+Source pour les popups: https://docs.python.org/3/library/tkinter.messagebox.html + ChatGPT
 """
 
 import tkinter as tk
 import copy
 import random
-import tkinter.messagebox as msg
 
 root = tk.Tk()
 root.title('2048')
