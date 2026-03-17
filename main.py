@@ -12,6 +12,7 @@ Source pour fenetre centrée: https://www.pythontutorial.net/tkinter/tkinter-win
 
 import tkinter as tk
 import copy
+import random
 
 root = tk.Tk()
 root.title('2048')
@@ -51,33 +52,17 @@ tiles_colors = {
 }
 
 game = [
-    [4,0,2,2],
-    [2,0,2,8],
-    [0,4,16,2],
-    [2,32,2,2]
-]
-
-# copie du jeu pour bouton reset
-game_very_old = copy.deepcopy(game)
-
-#Jeux en mémoire
-""""
-# Jeu rempli
-game = [
-    [2,4,8,16],
-    [32,64,128,256],
-    [512,1024,2048,4096],
-    [8192,0,0,0]
-]
- # Jeu vide
-game = [
     [0,0,0,0],
     [0,0,0,0],
     [0,0,0,0],
     [0,0,0,0]
 ]
 
-"""
+first_game = True
+
+# copie du jeu pour bouton reset
+game_very_old = copy.deepcopy(game)
+
 current_score = 0
 best_score = 0
 old_best_score = 0
@@ -147,18 +132,24 @@ back_button.pack(side="left")
 
 # Fonction Reset du jeu
 def reset_game():
+    global first_game
     global game
     global game_old
     global current_score
     game = copy.deepcopy(game_very_old)
     game_old = copy.deepcopy(game)
     current_score = 0
+    if first_game == True:
+        restart_button.config(text="Rejouer")
+        first_game = False
+    spawn_tile()
+    spawn_tile()
     display()
 
 # Affichage bouton reset
 restart_button = tk.Button(
     bottom_row,
-    text="Rejouer",
+    text="Jouer",
     font=("Helvetica", 14, "bold"),
     bg="#D9D9D9",
     fg="black",
@@ -220,6 +211,28 @@ def save_state():
     old_score = current_score
     old_best_score = best_score
 
+def spawn_tile():
+    # Trouver les cases vides
+    empty_tiles = []
+    for i in range(4):
+        for j in range(4):
+            if game[i][j] == 0:
+                empty_tiles.append((i, j))
+
+    # Vérifier s'il reste de la place
+    if not empty_tiles:
+        return  # aucune case libre → on ne fait rien
+
+    # Choisir une case aléatoire
+    i, j = random.choice(empty_tiles)
+
+    # Choisir la valeur (80% 2, 20% 4)
+    if random.randint(1,10) <= 8:
+        game[i][j] = 2
+    else:
+        game[i][j] = 4
+
+
 # Capture des inputs clavier
 def key_input(event):
     key = event.keysym
@@ -270,7 +283,7 @@ def right():
     if game_old == game:
         print("Le jeu n'a pas changé")
     if game_old != game:
-        print("Right")
+        spawn_tile()
     display()
 
 def left():
@@ -280,7 +293,7 @@ def left():
     if game_old == game:
         print("Le jeu n'a pas changé")
     if game_old != game:
-        print("Left")
+        spawn_tile()
     display()
 
 def up():
@@ -290,7 +303,7 @@ def up():
     if game_old == game:
         print("Le jeu n'a pas changé")
     if game_old != game:
-        print("Up")
+        spawn_tile()
     display()
 
 def down():
@@ -300,7 +313,7 @@ def down():
     if game_old == game:
         print("Le jeu n'a pas changé")
     if game_old != game:
-        print("Down")
+        spawn_tile()
     display()
 
 display()
