@@ -13,6 +13,7 @@ Source pour fenetre centrée: https://www.pythontutorial.net/tkinter/tkinter-win
 import tkinter as tk
 import copy
 import random
+import tkinter.messagebox as msg
 
 root = tk.Tk()
 root.title('2048')
@@ -67,7 +68,7 @@ old_best_score = 0
 first_game = True
 first_move = True
 won = False
-lose = False
+lost = False
 
 # -----------------------------------------HEADER-----------------------------------------
 
@@ -111,10 +112,7 @@ bestscore_label.pack(padx=10, pady=10)
 
 #Affichage bouton Retour et Fonction retour
 def back_game():
-    global first_move
-    global game
-    global current_score
-    global best_score
+    global first_move, game, current_score, best_score
     if first_move == True:
         return
     else:
@@ -138,12 +136,7 @@ back_button.pack(side="left")
 
 # Fonction Reset du jeu
 def reset_game():
-    global first_game
-    global game
-    global game_old
-    global current_score
-    global first_move
-    global win
+    global first_game, game, game_old, current_score, first_move, win
     win = False
     first_move = True
     game = copy.deepcopy(game_very_old)
@@ -196,6 +189,38 @@ for row in range(4):
         current_row.append(label)
     tile_labels.append(current_row)
 
+# Affichage du popup lors de défaite
+def lose_popup():
+    popup = tk.Toplevel(root) # nouvelle fenêtre popup
+    popup.title("Perdu !") # titre de la fenêtre
+    popup.resizable(False, False) # taille fixe
+    popup.focus_set() # focus sur le popup
+    popup.protocol("WM_DELETE_WINDOW", lambda: None) # empêche de fermer avec la croix
+    # Taille et centrage du popup
+    w, h = 300, 120
+    x = root.winfo_x() + root.winfo_width() // 2 - w // 2
+    y = root.winfo_y() + root.winfo_height() // 2 - h // 2
+    popup.geometry(f"{w}x{h}+{x}+{y}")
+    # Message et bouton Rejouer
+    tk.Label(popup, text="Perdu !").pack(pady=10)
+    tk.Button(popup, text="Rejouer", command=lambda: [reset_game(), popup.destroy()]).pack(pady=5)
+
+# Affichage du popup lors de victoire
+def win_popup():
+    popup = tk.Toplevel(root) # nouvelle fenêtre popup
+    popup.title("Victoire !") # titre de la fenêtre
+    popup.resizable(False, False)
+    popup.focus_set() # met le focus sur le popup
+    # Taille et centrage du popup
+    w, h = 300, 150
+    x = root.winfo_x() + root.winfo_width() // 2 - w // 2
+    y = root.winfo_y() + root.winfo_height() // 2 - h // 2
+    popup.geometry(f"{w}x{h}+{x}+{y}")
+    # Message et boutons Continuer / Rejouer
+    tk.Label(popup, text="Vous avez gagné !").pack(pady=10)
+    tk.Button(popup, text="Continuer", command=popup.destroy).pack(pady=5)
+    tk.Button(popup, text="Rejouer", command=lambda: [reset_game(), popup.destroy()]).pack(pady=5)
+
 
 # -----------------------------------------LOGIQUE DU JEU-----------------------------------------
 
@@ -212,23 +237,38 @@ def display():
     score_label.config(text=f"Score\n{current_score}")
     bestscore_label.config(text=f"Best Score\n{best_score}")
 
-def win_message():
-    print("Vous avez gagné !")
-
-def lose():
-    print("Vous avez perdu !")
-
+# Fonction qui verifie si le jeu est gagné
 def check_win():
     global won
-    if not won:
+    if not won: # ne vérifier que si le joueur n'a pas déjà gagné
         for row in game:
-            if 2048 in row:
+            if 2048 in row: # check si une tuile 2048 est présente
                 won = True
-                win_message()
+                win_popup()
                 break
 
+# Fonction qui verifie si le jeu est perdu
 def check_lose():
-    global lose
+    global game, first_move
+    # Vérifie s'il reste une case vide
+    for i in range(4):
+        for j in range(4):
+            if game[i][j] == 0:
+                return False  # le joueur peut encore jouer
+    # Vérifie s'il reste une fusion possible horizontalement
+    for i in range(4):
+        for j in range(3):
+            if game[i][j] == game[i][j+1]:
+                return False
+    # Vérifie s'il reste une fusion possible verticalement
+    for j in range(4):
+        for i in range(3):
+            if game[i][j] == game[i+1][j]:
+                return False
+    # Si aucune case vide et aucune fusion possible le joueur a perdu
+    first_move = True
+    game = copy.deepcopy(game_very_old)
+    lose_popup()
 
 # Sauvegarde de l'etat du jeu
 def save_state():
@@ -314,8 +354,9 @@ def right():
     if game_old != game:
         # Si le plateau a changé, ajouter une nouvelle tuile et vérifier la victoire
         spawn_tile()
+        display()
         check_win()
-    display()
+        check_lose()
 
 def left():
     save_state() # Sauvegarde l'état actuel du plateau et du score
@@ -328,8 +369,10 @@ def left():
     if game_old != game:
         # Si le plateau a changé, ajouter une nouvelle tuile et vérifier la victoire
         spawn_tile()
+        display()
         check_win()
-    display()
+        check_lose()
+
 
 def up():
     save_state() # Sauvegarde l'état actuel du plateau et du score
@@ -342,8 +385,10 @@ def up():
     if game_old != game:
         # Si le plateau a changé, ajouter une nouvelle tuile et vérifier la victoire
         spawn_tile()
+        display()
         check_win()
-    display()
+        check_lose()
+
 
 def down():
     save_state() # Sauvegarde l'état actuel du plateau et du score
@@ -356,8 +401,9 @@ def down():
     if game_old != game:
         # Si le plateau a changé, ajouter une nouvelle tuile et vérifier la victoire
         spawn_tile()
+        display()
         check_win()
-    display()
+        check_lose()
 
 display()
 root.mainloop()
