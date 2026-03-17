@@ -59,7 +59,7 @@ game = [
 ]
 
 first_game = True
-
+first_move = True
 # copie du jeu pour bouton reset
 game_very_old = copy.deepcopy(game)
 
@@ -109,14 +109,18 @@ bestscore_label.pack(padx=10, pady=10)
 
 #Affichage bouton Retour et Fonction retour
 def back_game():
+    global first_move
     global game
     global current_score
     global best_score
-    game = copy.deepcopy(game_old)
-    current_score = old_score
-    best_score = old_best_score
-    print("Retour")
-    display()
+    if first_move == True:
+        return
+    else:
+        game = copy.deepcopy(game_old)
+        current_score = old_score
+        best_score = old_best_score
+        print("Retour")
+        display()
 
 back_button = tk.Button(
     bottom_row,
@@ -136,6 +140,8 @@ def reset_game():
     global game
     global game_old
     global current_score
+    global first_move
+    first_move = True
     game = copy.deepcopy(game_very_old)
     game_old = copy.deepcopy(game)
     current_score = 0
@@ -207,6 +213,8 @@ def save_state():
     global game_old
     global old_score
     global old_best_score
+    global first_move
+    first_move = False
     game_old = copy.deepcopy(game)
     old_score = current_score
     old_best_score = best_score
