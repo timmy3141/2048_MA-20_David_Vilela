@@ -58,14 +58,16 @@ game = [
     [0,0,0,0]
 ]
 
-first_game = True
-first_move = True
 # copie du jeu pour bouton reset
 game_very_old = copy.deepcopy(game)
 
 current_score = 0
 best_score = 0
 old_best_score = 0
+first_game = True
+first_move = True
+won = False
+lose = False
 
 # -----------------------------------------HEADER-----------------------------------------
 
@@ -141,6 +143,8 @@ def reset_game():
     global game_old
     global current_score
     global first_move
+    global win
+    win = False
     first_move = True
     game = copy.deepcopy(game_very_old)
     game_old = copy.deepcopy(game)
@@ -208,6 +212,24 @@ def display():
     score_label.config(text=f"Score\n{current_score}")
     bestscore_label.config(text=f"Best Score\n{best_score}")
 
+def win_message():
+    print("Vous avez gagné !")
+
+def lose():
+    print("Vous avez perdu !")
+
+def check_win():
+    global won
+    if not won:
+        for row in game:
+            if 2048 in row:
+                won = True
+                win_message()
+                break
+
+def check_lose():
+    global lose
+
 # Sauvegarde de l'etat du jeu
 def save_state():
     global game_old
@@ -219,6 +241,7 @@ def save_state():
     old_score = current_score
     old_best_score = best_score
 
+# Fonction qui fait apparaitre une "tile" random dans une case vide
 def spawn_tile():
     # Trouver les cases vides
     empty_tiles = []
@@ -226,14 +249,10 @@ def spawn_tile():
         for j in range(4):
             if game[i][j] == 0:
                 empty_tiles.append((i, j))
-
-    # Vérifier s'il reste de la place
     if not empty_tiles:
-        return  # aucune case libre → on ne fait rien
-
+        return
     # Choisir une case aléatoire
     i, j = random.choice(empty_tiles)
-
     # Choisir la valeur (80% 2, 20% 4)
     if random.randint(1,10) <= 8:
         game[i][j] = 2
@@ -285,43 +304,59 @@ def pack4(a,b,c,d):
 
 # Ecrasement des cases selon direction
 def right():
-    save_state()
+    save_state() # Sauvegarde l'état actuel du plateau et du score
     for i in range(4):
-        (game[i][3],game[i][2],game[i][1],game[i][0]) = pack4(game[i][3],game[i][2],game[i][1],game[i][0])
+        # Pour chaque ligne i, on déplace et fusionne les tuiles vers la droite
+        (game[i][3], game[i][2], game[i][1], game[i][0]) = pack4(game[i][3], game[i][2], game[i][1], game[i][0])
     if game_old == game:
+        # Si aucune tuile ne bouge
         print("Le jeu n'a pas changé")
     if game_old != game:
+        # Si le plateau a changé, ajouter une nouvelle tuile et vérifier la victoire
         spawn_tile()
+        check_win()
     display()
 
 def left():
-    save_state()
+    save_state() # Sauvegarde l'état actuel du plateau et du score
     for i in range(4):
-        (game[i][0],game[i][1],game[i][2],game[i][3]) = pack4(game[i][0],game[i][1],game[i][2],game[i][3])
+        # Pour chaque ligne i, on déplace et fusionne les tuiles vers la gauche
+        (game[i][0], game[i][1], game[i][2], game[i][3]) = pack4(game[i][0], game[i][1], game[i][2], game[i][3])
     if game_old == game:
+        # Si aucune tuile ne bouge
         print("Le jeu n'a pas changé")
     if game_old != game:
+        # Si le plateau a changé, ajouter une nouvelle tuile et vérifier la victoire
         spawn_tile()
+        check_win()
     display()
 
 def up():
-    save_state()
+    save_state() # Sauvegarde l'état actuel du plateau et du score
     for j in range(4):
-        (game[0][j],game[1][j],game[2][j],game[3][j]) = pack4(game[0][j],game[1][j],game[2][j],game[3][j])
+        # Pour chaque ligne i, on déplace et fusionne les tuiles vers le haut
+        (game[0][j], game[1][j], game[2][j], game[3][j]) = pack4(game[0][j], game[1][j], game[2][j], game[3][j])
     if game_old == game:
+        # Si aucune tuile ne bouge
         print("Le jeu n'a pas changé")
     if game_old != game:
+        # Si le plateau a changé, ajouter une nouvelle tuile et vérifier la victoire
         spawn_tile()
+        check_win()
     display()
 
 def down():
-    save_state()
+    save_state() # Sauvegarde l'état actuel du plateau et du score
     for j in range(4):
-        (game[3][j], game[2][j],game[1][j],game[0][j]) = pack4(game[3][j],game[2][j],game[1][j],game[0][j])
+        # Pour chaque ligne i, on déplace et fusionne les tuiles vers le bas
+        (game[3][j], game[2][j], game[1][j], game[0][j]) = pack4(game[3][j], game[2][j], game[1][j], game[0][j])
     if game_old == game:
+        # Si aucune tuile ne bouge
         print("Le jeu n'a pas changé")
     if game_old != game:
+        # Si le plateau a changé, ajouter une nouvelle tuile et vérifier la victoire
         spawn_tile()
+        check_win()
     display()
 
 display()
