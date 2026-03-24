@@ -14,6 +14,7 @@ Source pour les popups: https://docs.python.org/3/library/tkinter.messagebox.htm
 import tkinter as tk
 import copy
 import random
+from tkinter import messagebox
 
 root = tk.Tk()
 root.title('2048')
@@ -63,12 +64,14 @@ game = [
 game_very_old = copy.deepcopy(game)
 
 current_score = 0
+game_old = 0
 best_score = 0
-old_best_score = 0
 first_game = True
 first_move = True
 won = False
 lost = False
+current_round = 0
+history = []
 
 # -----------------------------------------HEADER-----------------------------------------
 
@@ -91,7 +94,7 @@ title_label = tk.Label(
     font=("Helvetica", 30, "bold"),
     bg="#D9D9D9",
     fg="#333",
-    width=8,
+    width=10,
     height=2,
     bd=2,
     relief="solid"
@@ -136,7 +139,7 @@ back_button.pack(side="left")
 
 # Fonction Reset du jeu
 def reset_game():
-    global first_game, game, game_old, current_score, first_move, win
+    global first_game, game, game_old, current_score, first_move, won
     win = False
     first_move = True
     game = copy.deepcopy(game_very_old)
@@ -152,11 +155,11 @@ def reset_game():
 # Affichage bouton reset
 restart_button = tk.Button(
     bottom_row,
-    text="Jouer",
+    text="Nouvelle Partie",
     font=("Helvetica", 14, "bold"),
     bg="#D9D9D9",
     fg="black",
-    width=11,
+    width=15,
     height=2,
     command=reset_game
 )
@@ -189,39 +192,6 @@ for row in range(4):
         current_row.append(label)
     tile_labels.append(current_row)
 
-# Affichage du popup lors de défaite
-def lose_popup():
-    popup = tk.Toplevel(root) # nouvelle fenêtre popup
-    popup.title("Perdu !") # titre de la fenêtre
-    popup.resizable(False, False) # taille fixe
-    popup.focus_set() # focus sur le popup
-    popup.protocol("WM_DELETE_WINDOW", lambda: None) # empêche de fermer avec la croix
-    # Taille et centrage du popup
-    w, h = 300, 120
-    x = root.winfo_x() + root.winfo_width() // 2 - w // 2
-    y = root.winfo_y() + root.winfo_height() // 2 - h // 2
-    popup.geometry(f"{w}x{h}+{x}+{y}")
-    # Message et bouton Rejouer
-    tk.Label(popup, text="Perdu !").pack(pady=10)
-    tk.Button(popup, text="Rejouer", command=lambda: [reset_game(), popup.destroy()]).pack(pady=5)
-
-# Affichage du popup lors de victoire
-def win_popup():
-    popup = tk.Toplevel(root) # nouvelle fenêtre popup
-    popup.title("Victoire !") # titre de la fenêtre
-    popup.resizable(False, False)
-    popup.focus_set() # met le focus sur le popup
-    # Taille et centrage du popup
-    w, h = 300, 150
-    x = root.winfo_x() + root.winfo_width() // 2 - w // 2
-    y = root.winfo_y() + root.winfo_height() // 2 - h // 2
-    popup.geometry(f"{w}x{h}+{x}+{y}")
-    # Message et boutons Continuer / Rejouer
-    tk.Label(popup, text="Vous avez gagné !").pack(pady=10)
-    tk.Button(popup, text="Continuer", command=popup.destroy).pack(pady=5)
-    tk.Button(popup, text="Rejouer", command=lambda: [reset_game(), popup.destroy()]).pack(pady=5)
-
-
 # -----------------------------------------LOGIQUE DU JEU-----------------------------------------
 
 # Mise à joue de l'affichage des cases
@@ -244,8 +214,11 @@ def check_win():
         for row in game:
             if 2048 in row: # check si une tuile 2048 est présente
                 won = True
-                win_popup()
-                break
+                response = messagebox.askyesno("Victoire !!","Félicitations, vous avez atteint 2048 !\n\nSouhaitez vous commencer une nouvelle partie ?")
+                if response:
+                    reset_game()
+                else:
+                    break
 
 # Fonction qui verifie si le jeu est perdu
 def check_lose():
@@ -268,7 +241,11 @@ def check_lose():
     # Si aucune case vide et aucune fusion possible le joueur a perdu
     first_move = True
     game = copy.deepcopy(game_very_old)
-    lose_popup()
+    response = messagebox.askyesno("Défaite !!", "Dommage, vous avez perdu !\n\nSouhaitez vous rejouer ?")
+    if response:
+        reset_game()
+    else:
+        root.destroy()
 
 # Sauvegarde de l'etat du jeu
 def save_state():
