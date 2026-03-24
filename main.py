@@ -54,10 +54,10 @@ tiles_colors = {
 }
 
 game = [
+    [0,2,0,4],
     [0,0,0,0],
-    [0,0,0,0],
-    [0,0,0,0],
-    [0,0,0,0]
+    [0,0,8,0],
+    [64,0,0,0]
 ]
 
 # copie du jeu pour bouton reset
@@ -115,15 +115,24 @@ bestscore_label.pack(padx=10, pady=10)
 
 #Affichage bouton Retour et Fonction retour
 def back_game():
-    global first_move, game, current_score, best_score
-    if first_move == True:
-        return
+    global first_move, current_round, game, current_score, best_score
+    if first_move:
+        print("Aucun coup joué")
+        return  # aucun coup joué, rien à faire
+    elif current_round == 0:
+        return  # déjà au début de l'historique
     else:
-        game = copy.deepcopy(game_old)
-        current_score = old_score
-        best_score = old_best_score
-        print("Retour")
+        # reculer d’un coup
+        current_round -= 1
+        # restaurer l’état correspondant
+        state = history[current_round]
+        game = copy.deepcopy(state[0])
+        current_score = state[1]
+        best_score = state[2]
+
+        # mettre à jour l’affichage
         display()
+        print("Retour")
 
 back_button = tk.Button(
     bottom_row,
@@ -148,8 +157,8 @@ def reset_game():
     if first_game == True:
         restart_button.config(text="Rejouer")
         first_game = False
-    spawn_tile()
-    spawn_tile()
+    # spawn_tile()
+    # spawn_tile()
     display()
 
 # Affichage bouton reset
@@ -249,14 +258,14 @@ def check_lose():
 
 # Sauvegarde de l'etat du jeu
 def save_state():
-    global game_old
-    global old_score
-    global old_best_score
-    global first_move
+    global best_score, first_move, history, current_round, current_score, game
+    history = history[:current_round + 1]
+    history.append((
+        copy.deepcopy(game),
+        current_score,
+        best_score))
+    current_round += 1
     first_move = False
-    game_old = copy.deepcopy(game)
-    old_score = current_score
-    old_best_score = best_score
 
 # Fonction qui fait apparaitre une "tile" random dans une case vide
 def spawn_tile():
@@ -330,7 +339,7 @@ def right():
         print("Le jeu n'a pas changé")
     if game_old != game:
         # Si le plateau a changé, ajouter une nouvelle tuile et vérifier la victoire
-        spawn_tile()
+        # spawn_tile()
         display()
         check_win()
         check_lose()
@@ -345,7 +354,7 @@ def left():
         print("Le jeu n'a pas changé")
     if game_old != game:
         # Si le plateau a changé, ajouter une nouvelle tuile et vérifier la victoire
-        spawn_tile()
+        # spawn_tile()
         display()
         check_win()
         check_lose()
@@ -361,7 +370,7 @@ def up():
         print("Le jeu n'a pas changé")
     if game_old != game:
         # Si le plateau a changé, ajouter une nouvelle tuile et vérifier la victoire
-        spawn_tile()
+        # spawn_tile()
         display()
         check_win()
         check_lose()
@@ -377,7 +386,7 @@ def down():
         print("Le jeu n'a pas changé")
     if game_old != game:
         # Si le plateau a changé, ajouter une nouvelle tuile et vérifier la victoire
-        spawn_tile()
+        # spawn_tile()
         display()
         check_win()
         check_lose()
