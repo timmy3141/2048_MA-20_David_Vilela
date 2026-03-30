@@ -56,8 +56,8 @@ tiles_colors = {
 game = [
     [0,0,0,0],
     [0,0,0,0],
-    [0,0,0,0],
-    [0,0,0,0]
+    [1024,0,0,0],
+    [1024,0,0,0]
 ]
 
 # copie du jeu pour bouton reset
@@ -148,9 +148,11 @@ back_button.pack(side="left")
 
 # Fonction Reset du jeu
 def reset_game():
-    global first_game, game, game_old, current_score, first_move, won
-    win = False
+    global first_game, game, game_old, current_score, first_move, won, history, won, current_round
+    won = False
     first_move = True
+    history = []
+    current_round = 0
     game = copy.deepcopy(game_very_old)
     game_old = copy.deepcopy(game)
     current_score = 0
