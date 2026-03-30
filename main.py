@@ -54,10 +54,10 @@ tiles_colors = {
 }
 
 game = [
-    [0,2,0,4],
     [0,0,0,0],
-    [0,0,8,0],
-    [64,0,0,0]
+    [0,0,0,0],
+    [0,0,0,0],
+    [0,0,0,0]
 ]
 
 # copie du jeu pour bouton reset
@@ -132,7 +132,7 @@ def back_game():
 
         # mettre à jour l’affichage
         display()
-        print("Retour")
+        print(f"Retour:{current_round}")
 
 back_button = tk.Button(
     bottom_row,
@@ -157,8 +157,8 @@ def reset_game():
     if first_game == True:
         restart_button.config(text="Rejouer")
         first_game = False
-    # spawn_tile()
-    # spawn_tile()
+    spawn_tile()
+    spawn_tile()
     display()
 
 # Affichage bouton reset
@@ -337,12 +337,14 @@ def right():
     if game_old == game:
         # Si aucune tuile ne bouge
         print("Le jeu n'a pas changé")
-    if game_old != game:
+    if game_old != game and first_game == False:
         # Si le plateau a changé, ajouter une nouvelle tuile et vérifier la victoire
-        # spawn_tile()
+        spawn_tile()
         display()
         check_win()
         check_lose()
+    else:
+        print("Aucun coup joué")
 
 def left():
     save_state() # Sauvegarde l'état actuel du plateau et du score
@@ -352,12 +354,14 @@ def left():
     if game_old == game:
         # Si aucune tuile ne bouge
         print("Le jeu n'a pas changé")
-    if game_old != game:
+    if game_old != game and first_game == False:
         # Si le plateau a changé, ajouter une nouvelle tuile et vérifier la victoire
-        # spawn_tile()
+        spawn_tile()
         display()
         check_win()
         check_lose()
+    else:
+        print("Aucun coup joué")
 
 
 def up():
@@ -368,12 +372,14 @@ def up():
     if game_old == game:
         # Si aucune tuile ne bouge
         print("Le jeu n'a pas changé")
-    if game_old != game:
+    if game_old != game and first_game == False:
         # Si le plateau a changé, ajouter une nouvelle tuile et vérifier la victoire
-        # spawn_tile()
+        spawn_tile()
         display()
         check_win()
         check_lose()
+    else:
+        print("Aucun coup joué")
 
 
 def down():
@@ -384,12 +390,13 @@ def down():
     if game_old == game:
         # Si aucune tuile ne bouge
         print("Le jeu n'a pas changé")
-    if game_old != game:
+    if game_old != game and first_game == False:
         # Si le plateau a changé, ajouter une nouvelle tuile et vérifier la victoire
-        # spawn_tile()
+        spawn_tile()
         display()
         check_win()
         check_lose()
-
+    else:
+        print("Aucun coup joué")
 display()
 root.mainloop()
